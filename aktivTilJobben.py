@@ -38,6 +38,7 @@ if screensize == 5120:
         # click(2560, 670)
         # time.sleep(2)
         click(70, 220)
+        time.sleep(2)
         click(2560,490)
 else:
         click(650,580)
