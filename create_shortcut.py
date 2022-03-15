@@ -2,18 +2,27 @@
 # Kan brukes fritt som det er uten noe ansvar
 
 import os
-# from pathlib import Path
 from win32com.client import Dispatch
 import runtime
 
 # Variable
 info = 0
 
+# Definer funksjon
+def create_short(target):
+    global info
+    if os.path.isdir(target):
+        shell = Dispatch('WScript.Shell')
+        shortcut =  shell.CreateShortCut(path)
+        shortcut.Targetpath = target
+        shortcut.save()
+        info += 1
+
 while info == 0:
     
     oppdragsnr = input('Inntast oppdragsnr: ')
     beskrivelse = input('Beskrivelse av oppdraget: ')
-
+    region_input = input('Er dit oppdrag i Sogndal tast S + ENTER, er dit oppdrag i Førde tast F + ENTER, ellers kun tast ENTER: ')
     start = runtime.starttime()
 
     path = 'X:\\nor\\oppdrag'
@@ -27,24 +36,25 @@ while info == 0:
     endposition = path.rfind('\\')
     shortpath = path[:endposition+1]
 
-    if not os.path.exists(shortpath):
+    if not os.path.isdir(shortpath):
         os.mkdir(shortpath)
         finishpath = shortpath + 'Avsluttet oppdrag\\'
         os.mkdir(finishpath)
 
-    # Finn riktig region
-    for region in regioner:
-        target = 'X:\\nor\\oppdrag\\' + region.name + '\\'+ oppdragsnr[:3] + '\\' + oppdragsnr[3:5] + '\\' + oppdragsnr
-        # targetpath = Path(target)
-
-    #Lager snarvei    
-        if os.path.exists(target):
-            shell = Dispatch('WScript.Shell')
-            shortcut =  shell.CreateShortCut(path)
-            shortcut.Targetpath = target
-            shortcut.save()
-            info += 1
-
+    # Hvis Sogndal
+    if region_input.lower() == 's':
+        target = 'X:\\nor\\oppdrag\\Sogndal\\'+ oppdragsnr[:3] + '\\' + oppdragsnr[3:5] + '\\' + oppdragsnr
+        create_short(target)
+    # Hvis Førde
+    elif region_input.lower() == 'f':
+        target = 'X:\\nor\\oppdrag\\Førde\\'+ oppdragsnr[:3] + '\\' + oppdragsnr[3:5] + '\\' + oppdragsnr
+        create_short(target)
+    # Ellers finn riktig region
+    else:
+        for region in regioner:
+            target = 'X:\\nor\\oppdrag\\' + region.name + '\\'+ oppdragsnr[:3] + '\\' + oppdragsnr[3:5] + '\\' + oppdragsnr
+            create_short(target)  
+      
     if info == 0:
         print('Oppdragsmappen eksistere ikke')
 
